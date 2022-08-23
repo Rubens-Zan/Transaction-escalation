@@ -25,6 +25,7 @@ typedef struct tTransaction {
 typedef struct tSchedule {
     tTransaction transactions[50];
     int transactionQt;
+    int commandQt;
 } tSchedule;
 
 void addCommand(tSchedule *schedule, tCommand *command);

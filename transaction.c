@@ -14,6 +14,7 @@ tSchedule *loadSchedule(FILE *fp)
     tSchedule *schedule = malloc(sizeof(tSchedule));
     
     schedule->transactionQt = 0;
+    schedule->commandQt = 0;
     while ((read = getline(&line, &len, fp)) != -1)
     {
         command = getCommand(line);
@@ -21,11 +22,14 @@ tSchedule *loadSchedule(FILE *fp)
             schedule->transactions[schedule->transactionQt] = (*createTransaction(command->transactionId)); 
             schedule->transactionQt++;
         }
-
-       addCommand(schedule, command); 
+        
+        schedule->commandQt++;
+        addCommand(schedule, command); 
     }
 
     fclose(fp);
+
+    return schedule;
 }
 /* -------------------------------------------------------------------------- */
 bool isNewTransaction(tSchedule *schedule, int transactionId){   
