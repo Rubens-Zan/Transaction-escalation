@@ -5,68 +5,90 @@
 #include <stdbool.h>
 
 /* -------------------------------------------------------------------------- */
+
 tSchedule *loadSchedule(FILE *fp)
 {
     char *line = NULL;
     size_t len = 0;
     size_t read;
     tCommand *command = NULL;
-    tSchedule *schedule = malloc(sizeof(tSchedule));
-    
-    schedule->transactionQt = 0;
-    schedule->commandQt = 0;
+    tSchedule *schedule = createSchedule();
+
     while ((read = getline(&line, &len, fp)) != -1)
     {
+        escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
+
         command = getCommand(line);
-        if (isNewTransaction(schedule, command->transactionId)){
-            schedule->transactions[schedule->transactionQt] = (*createTransaction(command->transactionId)); 
-            schedule->transactionQt++;
-        }
         
-        schedule->commandQt++;
-        addCommand(schedule, command); 
+        if (isNewTransaction(schedule, command->transactionId))
+        {
+            curEscalation->transactions[curEscalation->transactionsQt] = (*createTransaction(schedule->transactionsQt));
+            curEscalation->openedTransactions++;
+            curEscalation->transactionsQt++;
+            schedule->transactionsQt++;
+        }
+
+        if (command->type == COMMIT)
+        {
+            curEscalation->openedTransactions--;
+
+            if (curEscalation->openedTransactions == 0)
+            {
+                schedule->escalationsQt++;
+            }
+        }
+
+        addCommand(curEscalation->transactions, curEscalation->transactionsQt, command);
+        free(command);
     }
 
     fclose(fp);
 
     return schedule;
 }
-/* -------------------------------------------------------------------------- */
-bool isNewTransaction(tSchedule *schedule, int transactionId){   
-    for (int i = 0; i < schedule->transactionQt; i++){
-        if (schedule->transactions[i].id == transactionId){
-            return false;
-        }
-    }
 
-    return true;
+/* -------------------------------------------------------------------------- */
+
+escalationT *createNewEscalation()
+{
+    escalationT *newEscalation = malloc(sizeof(escalationT));
+
+    newEscalation->openedTransactions = 0;
+    return newEscalation;
 }
 
 /* -------------------------------------------------------------------------- */
+
+bool isNewTransaction(tSchedule *schedule, int transactionId)
+{
+    return (transactionId > schedule->transactionsQt); 
+}
+
+/* -------------------------------------------------------------------------- */
+
 tCommand *getCommand(char *line)
 {
     line[strlen(line) - 1] = '\0';
     char delim[] = " ";
     static char commandType[20];
     static char atribute[20];
-    static char time[20];
+    int time;
     int transactionId;
 
-    strcpy(time, strtok(line, delim));
+    time = atoi(strtok(line, delim));
     transactionId = atoi(strtok(NULL, delim));
     strcpy(commandType, strtok(NULL, delim));
     strcpy(atribute, strtok(NULL, delim));
 
-    time[strlen(time)] = '\0';
     commandType[strlen(commandType)] = '\0';
     atribute[strlen(atribute)] = '\0';
 
-    return createCommand(commandType, atribute, transactionId);
+    return createCommand(commandType, atribute, transactionId, time);
 }
 
 /* -------------------------------------------------------------------------- */
 
-tCommand *createCommand(char *commandType, char *atribute, int transactionId)
+tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time)
 {
     tCommand *command = malloc(sizeof(tCommand));
 
@@ -86,27 +108,44 @@ tCommand *createCommand(char *commandType, char *atribute, int transactionId)
     default:
         break;
     }
+    command->time = time;
     return command;
 }
 
 /* -------------------------------------------------------------------------- */
+
+tSchedule *createSchedule()
+{
+    tSchedule *schedule = malloc(sizeof(tSchedule));
+    schedule->escalationsQt = 0;
+    schedule->transactionsQt = 0;
+    return schedule;
+}
+
+/* -------------------------------------------------------------------------- */
+
 tTransaction *createTransaction(int id)
 {
     tTransaction *transaction = malloc(sizeof(tTransaction));
     transaction->id = id;
+    transaction->commandsQt = 0;
 
     return transaction;
 }
 
 /* -------------------------------------------------------------------------- */
-void addCommand(tSchedule *schedule, tCommand *command){
-    for (int i = 0; i < schedule->transactionQt; i++){
-        if (schedule->transactions[i].id == command->transactionId){
-            schedule->transactions[i].commands[schedule->transactions[i].commandQt]= (*command);
-            schedule->transactions[i].commandQt++;
+
+void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command)
+{
+    for (int i = 0; i < transactionsQt; i++)
+    {
+        if (transactions[i].id == command->transactionId)
+        {
+            transactions[i].commands[transactions[i].commandsQt] = (*command);
+            transactions[i].commandsQt++;
             break;
         }
-        
     }
 }
+
 /* -------------------------------------------------------------------------- */

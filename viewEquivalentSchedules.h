@@ -5,6 +5,6 @@
 bool isScheduleEquivalent (tSchedule *schedule); 
 tCommand ** alocateMat(int lin,int col); 
 void getAllCommands(tSchedule *schedules,tCommand *allCommands);
-void buildPossibleSerialized(tSchedule *schedule);
+tCommand ** buildPossibleSerialized(tSchedule *schedule); 
 
 #endif
