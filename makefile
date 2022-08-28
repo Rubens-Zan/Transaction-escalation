@@ -1,5 +1,6 @@
 MODULOS = transaction \
-	viewEquivalentSchedules
+	viewEquivalentSchedules \
+	auxiliar
 
 OBJETOS = teste.o $(addsuffix .o,$(MODULOS))
 

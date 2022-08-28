@@ -22,10 +22,10 @@ tSchedule *loadSchedule(FILE *fp)
         
         if (isNewTransaction(schedule, command->transactionId))
         {
+            schedule->transactionsQt++;
             curEscalation->transactions[curEscalation->transactionsQt] = (*createTransaction(schedule->transactionsQt));
             curEscalation->openedTransactions++;
             curEscalation->transactionsQt++;
-            schedule->transactionsQt++;
         }
 
         if (command->type == COMMIT)
@@ -43,7 +43,6 @@ tSchedule *loadSchedule(FILE *fp)
     }
 
     fclose(fp);
-
     return schedule;
 }
 

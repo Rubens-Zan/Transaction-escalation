@@ -2,9 +2,9 @@
 #ifndef _VIEWEQUIVALENTSCHEDULES_H_
 #define _VIEWEQUIVALENTSCHEDULES_H_
 
-bool isScheduleEquivalent (tSchedule *schedule); 
-tCommand ** alocateMat(int lin,int col); 
-void getAllCommands(tSchedule *schedules,tCommand *allCommands);
-tCommand ** buildPossibleSerialized(tSchedule *schedule); 
+bool isScheduleEquivalent(escalationT *escalation);
+void getAllCommands(escalationT *escalation, tCommand *allCommands);
+tCommand **buildPossibleSerialized(escalationT *escalation);
+int getCommandQt (escalationT *escalation); 
 
 #endif

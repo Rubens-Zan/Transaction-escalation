@@ -1,71 +1,56 @@
 #include "transaction.h"
+#include "auxiliar.h"
 #include "viewEquivalentSchedules.h"
 #include <stdbool.h>
 #include <stdlib.h>
 
-bool isScheduleEquivalent(tSchedule *schedule)
+bool isScheduleEquivalent(escalationT *escalation)
 {
-    // tCommand **possibleSerialized = buildPossibleSerialized(schedule);
+    int commandsQt = getCommandQt(escalation); 
+
+    tCommand *allCommands =malloc(sizeof(tCommand)* commandsQt);
+    getAllCommands(escalation,allCommands);
+    tCommand **allPermutations = alocateMat(fact(commandsQt)+1, commandsQt+1);
+    int idx =0;
+    permute(allCommands,0,commandsQt-1,allPermutations, &idx);
+
+    printAllPermutations(allPermutations,fact(commandsQt), commandsQt);
+    // printf("[%d,%d]",commandsQt, fact(commandsQt)); 
+    // printAllPermutations(allPermutations,fact(commandsQt), commandsQt); 
     // return false;
     return true;
 }
-// /* -------------------------------------------------------------------------- */
 
-// tCommand **buildPossibleSerialized(tSchedule *schedule)
-// {
-//     int commandsQt = 0;
-//     // tCommand **commandsArray = alocateMat(schedule->commandQt * schedule->commandQt, schedule->commandQt + 1);
-//     // tCommand allCommands[schedule->commandQt + 100];
+int getCommandQt (escalationT *escalation){
+    int commandsQt = 0;
+    
+    for (int i = 0;i< escalation->transactionsQt;i++){
+        // printf("i tem %d %d\n",i, escalation->transactions[i].commandsQt);
+        commandsQt+=escalation->transactions[i].commandsQt; 
+    }
+    return commandsQt; 
+}
+/* -------------------------------------------------------------------------- */
 
-//     getAllCommands(schedule, allCommands);
+void freeArray(tCommand **array)
+{
+    free(array[0]);
+    free(array);
+}
 
-//     tCommand curCombination[100];
+/* -------------------------------------------------------------------------- */
 
-//     for (int i = 0; i < commandsQt; i++)
-//     {
-//         for (int j = 0; j < commandsQt - 1; j++)
-//         {
-//             commandsArray[i][j] = allCommands[j + 1];
-//             commandsArray[i][j + 1] = allCommands[j];
-//         }
-//     }
+void getAllCommands(escalationT *escalation, tCommand *allCommands)
+{
+    int curCommand = 0;
 
-//     return commandsArray;
-// }
-// /* -------------------------------------------------------------------------- */
-
-// tCommand **alocateMat(int lin, int col)
-// {
-//     tCommand **mat;
-//     mat = malloc(lin * sizeof(tCommand *));
-//     mat[0] = malloc(lin * col * sizeof(tCommand));
-
-//     for (int i = 1; i < lin; i++)
-//         mat[i] = mat[0] + i * col;
-
-//     return mat;
-// }
-// /* -------------------------------------------------------------------------- */
-
-// void freeArray(tCommand **array)
-// {
-//     free(array[0]);
-//     free(array);
-// }
-
-// /* -------------------------------------------------------------------------- */
-
-// void getAllCommands(tSchedule *schedules, tCommand *allCommands)
-// {
-//     int curCommand = 0;
-
-//     for (int i = 0; i < schedules->transactionQt; i++)
-//     {
-//         for (int j = 0; j < schedules->transactions[i].commandQt; j++)
-//         {
-//             allCommands[curCommand] = schedules->transactions[i].commands[j];
-//             curCommand++;
-//         }
-//     }
-// }
-// /* -------------------------------------------------------------------------- */
+    for (int i = 0; i < escalation->transactionsQt; i++)
+    {
+        for (int j = 0; j < escalation->transactions[i].commandsQt; j++)
+        {
+            allCommands[curCommand] = escalation->transactions[i].commands[j];
+            curCommand++;
+        }
+    }
+}
+/* -------------------------------------------------------------------------- */
