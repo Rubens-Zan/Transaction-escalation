@@ -10,7 +10,7 @@ void loopThroughSchedule(tSchedule *schedule){
         for (int j=0;j < curEscalation->transactionsQt-1;j++){
             printf("%d,",curEscalation->transactions[j].id+1);   
         }
-        printf("%d\n\n",curEscalation->transactions[curEscalation->transactionsQt-1].id + 1);
+        printf("%d ",curEscalation->transactions[curEscalation->transactionsQt-1].id + 1);
 
         if (isScheduleEquivalent(curEscalation)){
             printf("SV\n");

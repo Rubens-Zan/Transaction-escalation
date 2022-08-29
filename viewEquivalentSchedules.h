@@ -4,7 +4,6 @@
 
 bool isScheduleEquivalent(escalationT *escalation);
 void getAllCommands(escalationT *escalation, tCommand *allCommands);
-tCommand **buildPossibleSerialized(escalationT *escalation);
 int getCommandQt (escalationT *escalation); 
 
 #endif

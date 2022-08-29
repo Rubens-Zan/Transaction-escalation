@@ -10,37 +10,46 @@ void swap(tCommand *x, tCommand *y)
     *y = temp;
 }
 
-/* Function permute the given commands array
-This function takes three parameters:
-1. All commands array
-2. Starting index of the array
-3. Ending index of the array. 
-4. All permutations matrix. 
-5. Index of the current permutation. 
-*/
-void permute(tCommand *a, int l, int r, tCommand **allPerm, int *idx)
+/* -------------------------------------------------------------------------- */
+
+/**
+ * @brief Function to permute the all commands array
+ * @param array {tCommand *} Array to get all permutations
+ * @param init {int} Init range to be permutated
+ * @param end {int} end range to be permutated
+ * @param allPerm {tCommand **} Matrix with all possible permutations
+ * @param idx {int} - Index of the current permutation to atributte to all permutation mat line
+ */
+void permute(tCommand *array, int init, int end, tCommand **allPerm, int *idx)
 {
-    if (l == r)
+    if (init == end)
     {
-        for (int k = 0; k <= r; k++)
+        for (int k = 0; k <= end; k++)
         {
-            allPerm[(*idx)][k] = a[k];
+            allPerm[(*idx)][k] = array[k];
         }
 
         (*idx)++; 
     }
     else
     {
-        for (int i = l; i <= r; i++)
+        for (int i = init; i <= end; i++)
         {
-            swap((a + l), (a + i));
-            permute(a, l + 1, r, allPerm, idx);
-            swap((a + l), (a + i)); // backtrack
+            swap((array + init), (array + i));
+            permute(array, init + 1, end, allPerm, idx);
+            swap((array + init), (array + i)); // backtrack
         }
     }
 }
 
 /* -------------------------------------------------------------------------- */
+
+/**
+ * @brief Function to print all permutations 
+ * @param allPermutations {tCommand **} - Matrix with all the permutations
+ * @param lines {int} - number of lines in the allPermutations matrix
+ * @param cols {int} - number of collumns in the allPermutations matrix
+ */
 void printAllPermutations(tCommand **allPermutations, int lines, int cols){
     for (int i=0;i < lines;i++){
         for (int j=0;j < cols;j++){
@@ -74,4 +83,10 @@ tCommand **alocateMat(int lin, int col)
         mat[i] = mat[0] + i * col;
 
     return mat;
+}
+
+void freeMat(tCommand **mat)
+{
+    free(mat[0]);
+    free(mat);
 }

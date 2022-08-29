@@ -6,6 +6,11 @@
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @brief Function to load the schedule received from stdin 
+ * @param fp {FILE *} - File pointer to read the schedule 
+ * @return tSchedule* - Schedule received
+ */
 tSchedule *loadSchedule(FILE *fp)
 {
     char *line = NULL;
@@ -65,6 +70,11 @@ bool isNewTransaction(tSchedule *schedule, int transactionId)
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @brief Get the new command by reading new line
+ * @param line {char *} - Line of the new command
+ * @return tCommand* - Return the new command 
+ */
 tCommand *getCommand(char *line)
 {
     line[strlen(line) - 1] = '\0';
@@ -134,6 +144,12 @@ tTransaction *createTransaction(int id)
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @brief Function to add the received command to the transaction indexed by commandId
+ * @param transactions {tTransaction *} - Array with the all the transactions in the escalation 
+ * @param transactionsQt {int} - Transactions quantity in the escalation
+ * @param command {tCommand *} - Command to be added to the transaction that it belongs
+ */
 void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command)
 {
     for (int i = 0; i < transactionsQt; i++)

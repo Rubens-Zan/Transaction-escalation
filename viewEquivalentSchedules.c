@@ -14,32 +14,32 @@ bool isScheduleEquivalent(escalationT *escalation)
     int idx =0;
     permute(allCommands,0,commandsQt-1,allPermutations, &idx);
 
-    printAllPermutations(allPermutations,fact(commandsQt), commandsQt);
-    // printf("[%d,%d]",commandsQt, fact(commandsQt)); 
-    // printAllPermutations(allPermutations,fact(commandsQt), commandsQt); 
+    // printAllPermutations(allPermutations,fact(commandsQt), commandsQt);
     // return false;
     return true;
 }
 
+/**
+ * @brief Get the quantity of commands in the escalation
+ * @param escalation {escalationT} Escalation to get all commands 
+ * @return int - quantity of escalations
+ */
 int getCommandQt (escalationT *escalation){
     int commandsQt = 0;
     
     for (int i = 0;i< escalation->transactionsQt;i++){
-        // printf("i tem %d %d\n",i, escalation->transactions[i].commandsQt);
         commandsQt+=escalation->transactions[i].commandsQt; 
     }
     return commandsQt; 
 }
-/* -------------------------------------------------------------------------- */
-
-void freeArray(tCommand **array)
-{
-    free(array[0]);
-    free(array);
-}
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @brief Get the All Commands object
+ * @param escalation {escalationT} The escalation to get the commands
+ * @param allCommands {array} Array to receive all commands
+ */
 void getAllCommands(escalationT *escalation, tCommand *allCommands)
 {
     int curCommand = 0;
