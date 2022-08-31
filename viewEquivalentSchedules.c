@@ -3,20 +3,54 @@
 #include "viewEquivalentSchedules.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 bool isScheduleEquivalent(escalationT *escalation)
 {
     int commandsQt = getCommandQt(escalation); 
-
+    int nPermutations = fact(commandsQt);
     tCommand *allCommands =malloc(sizeof(tCommand)* commandsQt);
     getAllCommands(escalation,allCommands);
-    tCommand **allPermutations = alocateMat(fact(commandsQt)+1, commandsQt+1);
-    int idx =0;
-    permute(allCommands,0,commandsQt-1,allPermutations, &idx);
+    tCommand **allPermutations = alocateMatCommands(nPermutations+1, commandsQt+1);
 
-    // printAllPermutations(allPermutations,fact(commandsQt), commandsQt);
-    // return false;
-    return true;
+    int idx =0;
+    permute(allCommands,0,commandsQt-1,allPermutations, &idx, escalation);
+    // printf("\n");
+    // printAllPermutations(allPermutations, nPermutations, commandsQt);
+    
+    for (int i=0;i < nPermutations;i++){
+        if (checkLastWriteCondition(allPermutations[i], commandsQt) && checkWriteAfterRead(allPermutations[i],commandsQt)){
+            return true; 
+        }
+    }
+    return false;
+}
+
+bool checkLastWriteCondition(tCommand *commands, int n){
+    int lastOriginalTransactionCommitTime = 0;
+    int curTransactionLastCommitTime = 0;
+    for (int i =0;i < n;i++){
+        if (commands[i].type == COMMIT){
+            curTransactionLastCommitTime=commands[i].time; 
+            if (commands[i].time > lastOriginalTransactionCommitTime){
+                lastOriginalTransactionCommitTime = commands[i].time;
+            }
+        }
+    }
+    return lastOriginalTransactionCommitTime == curTransactionLastCommitTime; 
+}
+
+bool checkWriteAfterRead(tCommand *commands, int n){
+    for (int i =0;i < n;i++){
+        if (commands[i].type == READ){
+            for (int j = 0;j < n;j++){
+                if (commands[j].transactionId != commands[i].transactionId && commands[j].type == WRITE && (strcmp(commands[j].atribute,commands[i].atribute) == 0)){
+                    return false; 
+                }
+            }
+        }
+    }
+    return true; 
 }
 
 /**

@@ -5,5 +5,7 @@
 bool isScheduleEquivalent(escalationT *escalation);
 void getAllCommands(escalationT *escalation, tCommand *allCommands);
 int getCommandQt (escalationT *escalation); 
+bool checkLastWriteCondition(tCommand *commands, int n);
+bool checkWriteAfterRead(tCommand *commands, int n);
 
 #endif
