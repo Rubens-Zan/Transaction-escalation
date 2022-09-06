@@ -3,6 +3,10 @@
 #include "transaction.h"
 #include "viewEquivalentSchedules.h"
 
+/**
+ * @brief Function to loop through schedule, print the escalations and print if is view equivalent and if is serializable
+ * @param schedule {tSchedule *} - Schedule received
+ */
 void loopThroughSchedule(tSchedule *schedule){
     for (int i=0;i < schedule->escalationsQt;i++){
         escalationT *curEscalation = &schedule->escalations[i];
@@ -26,7 +30,6 @@ int main(int argc, char **argv)
 
     loopThroughSchedule(mySchedule); 
 
-    
-
+    free(mySchedule); 
     return 0;
 };

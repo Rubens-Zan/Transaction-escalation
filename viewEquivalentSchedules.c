@@ -5,6 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+/**
+ * @brief 
+ * 
+ * @param escalation 
+ * @return true 
+ * @return false 
+ */
 bool isScheduleEquivalent(escalationT *escalation)
 {
     int commandsQt = getCommandQt(escalation); 
@@ -26,6 +34,14 @@ bool isScheduleEquivalent(escalationT *escalation)
     return false;
 }
 
+/**
+ * @brief 
+ * 
+ * @param commands 
+ * @param n 
+ * @return true 
+ * @return false 
+ */
 bool checkLastWriteCondition(tCommand *commands, int n){
     int lastOriginalTransactionCommitTime = 0;
     int curTransactionLastCommitTime = 0;
@@ -40,14 +56,25 @@ bool checkLastWriteCondition(tCommand *commands, int n){
     return lastOriginalTransactionCommitTime == curTransactionLastCommitTime; 
 }
 
+/**
+ * @brief Function to check if 
+ * 
+ * @param commands {tCommand *}
+ * @param n {int n}
+ * @return true 
+ * @return false 
+ */
 bool checkWriteAfterRead(tCommand *commands, int n){
     for (int i =0;i < n;i++){
         if (commands[i].type == READ){
-            for (int j = 0;j < n;j++){
-                if (commands[j].transactionId != commands[i].transactionId && commands[j].type == WRITE && (strcmp(commands[j].atribute,commands[i].atribute) == 0)){
-                    return false; 
-                }
-            }
+            if (checkIfIsThereNextCommandByType(commands,WRITE, i, n))
+                return false; 
+
+            // for (int j = 0;j < n;j++){
+            //     if (commands[j].transactionId != commands[i].transactionId && commands[j].type == WRITE && (strcmp(commands[j].atribute,commands[i].atribute) == 0)){
+            //         return false; 
+            //     }
+            // }
         }
     }
     return true; 

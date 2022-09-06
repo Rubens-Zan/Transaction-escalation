@@ -7,8 +7,8 @@
 /* -------------------------------------------------------------------------- */
 
 /**
- * @brief Function to load the schedule received from stdin 
- * @param fp {FILE *} - File pointer to read the schedule 
+ * @brief Function to load the schedule received from stdin
+ * @param fp {FILE *} - File pointer to read the schedule
  * @return tSchedule* - Schedule received
  */
 tSchedule *loadSchedule(FILE *fp)
@@ -24,7 +24,7 @@ tSchedule *loadSchedule(FILE *fp)
         escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
 
         command = getCommand(line);
-        
+
         if (isNewTransaction(schedule, command->transactionId))
         {
             schedule->transactionsQt++;
@@ -65,7 +65,7 @@ escalationT *createNewEscalation()
 
 bool isNewTransaction(tSchedule *schedule, int transactionId)
 {
-    return (transactionId > schedule->transactionsQt); 
+    return (transactionId > schedule->transactionsQt);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -73,7 +73,7 @@ bool isNewTransaction(tSchedule *schedule, int transactionId)
 /**
  * @brief Get the new command by reading new line
  * @param line {char *} - Line of the new command
- * @return tCommand* - Return the new command 
+ * @return tCommand* - Return the new command
  */
 tCommand *getCommand(char *line)
 {
@@ -141,12 +141,20 @@ tTransaction *createTransaction(int id)
 
     return transaction;
 }
-
+/* -------------------------------------------------------------------------- */
+void freeSchedule(tSchedule *schedule)
+{
+    for (int i = 0; i < schedule->escalationsQt; i++)
+    {
+        for (int j = 0; j < schedule->escalations[i].transactionsQt; j++)
+            free(&schedule->escalations[i].transactions[j]);
+    }
+}
 /* -------------------------------------------------------------------------- */
 
 /**
  * @brief Function to add the received command to the transaction indexed by commandId
- * @param transactions {tTransaction *} - Array with the all the transactions in the escalation 
+ * @param transactions {tTransaction *} - Array with the all the transactions in the escalation
  * @param transactionsQt {int} - Transactions quantity in the escalation
  * @param command {tCommand *} - Command to be added to the transaction that it belongs
  */
@@ -164,3 +172,23 @@ void addCommand(tTransaction *transactions, int transactionsQt, tCommand *comman
 }
 
 /* -------------------------------------------------------------------------- */
+
+/**
+ * @brief Get if is there any next command by type searched and same atribute
+ * @param commands {tCommand *} Commands array 
+ * @param commandSearchedType {typesE} The command type searched
+ * @param idx {int} Index of the current command 
+ * @param commandsQt {int} Quantity of commands on the escalation
+ * @return true 
+ * @return false
+ */
+bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedType, int idx, int commandsQt)
+{
+    for (int i = 0; i < commandsQt; i++)
+    {
+        if (commands[i].transactionId != commands[idx].transactionId && commands[i].type == commandSearchedType && (strcmp(commands[i].atribute, commands[idx].atribute) == 0))
+        {
+            return false;
+        }
+    }
+}

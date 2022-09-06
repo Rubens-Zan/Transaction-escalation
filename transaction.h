@@ -51,5 +51,6 @@ tTransaction *createTransaction(int id);
 tSchedule *loadSchedule(FILE *fp);
 tTransaction *beginTransaction(int id);
 bool isNewTransaction(tSchedule *schedule, int transactionId);
+bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedType, int idx, int commandsQt);
 
 #endif

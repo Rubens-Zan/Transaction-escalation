@@ -40,7 +40,6 @@ void translateTransactionsIdxToCommands(tCommand *newCommandsOrder,int *transact
     }
 }
 
-// TODO ADJUST THIS FUNCTION TO NOT INVERT TRANSACTION COMMANDS ORDERS
 /**
  * @brief Function to permute the all commands array
  * @param array {tCommand *} Original commands array to get all permutations
