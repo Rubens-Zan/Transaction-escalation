@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-typedef enum
-{
+typedef enum {
     READ,
     WRITE,
     COMMIT
@@ -19,6 +18,19 @@ typedef struct tCommand
     int time;
 } tCommand;
 
+/**
+ * @struct TTransaction
+ * @brief Struct to represent a transaction
+ * @field id {int} Transaction id
+ * @field operation {typesE *} Array of commands
+ * @field attributes {char *} Array of attributes
+ */
+typedef struct transaction{
+    long id;
+    typesE operation;
+    char attribute[20];
+}TTransaction;
+
 typedef struct tTransaction
 {
     int id;
@@ -26,6 +38,19 @@ typedef struct tTransaction
     int commandsQt;
     bool isOpened;
 } tTransaction;
+
+/**
+ * @struct TSchedule
+ * @brief Stores all transactions read
+ * @field transactionList {tTransaction *} list of transactions
+ * @field transactionsListSize {long} quantity of transactions
+ * @field transactionQty {int} quantity of unique transactions ids
+ */
+typedef struct schedule {
+    TTransaction *transactionList;
+    long transactionListSize;
+    long transactionQty;
+} TSchedule;
 
 typedef struct escalationT
 {

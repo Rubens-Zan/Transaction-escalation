@@ -2,14 +2,14 @@ MODULOS = transaction \
 	viewEquivalentSchedules \
 	auxiliar
 
-OBJETOS = teste.o $(addsuffix .o,$(MODULOS))
+OBJETOS = escalona.o $(addsuffix .o,$(MODULOS))
 
 .PHONY : all clean
 
-teste : $(OBJETOS)
+escalona : $(OBJETOS)
 
 clean : 
 	$(RM) $(OBJETOS)
 
 purge : 
-	$(RM) $(OBJETOS) teste
+	$(RM) $(OBJETOS) escalona
