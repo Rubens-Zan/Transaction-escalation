@@ -15,11 +15,11 @@ tSchedule *loadSchedule(FILE *fp)
 {
     char *line = NULL;
     size_t len = 0;
-    size_t read;
+    //size_t read;
     tCommand *command = NULL;
     tSchedule *schedule = createSchedule();
 
-    while ((read = getline(&line, &len, fp)) != -1)
+    while (getline(&line, &len, fp) != -1)
     {
         escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
 
@@ -175,7 +175,7 @@ void addCommand(tTransaction *transactions, int transactionsQt, tCommand *comman
 
 /**
  * @brief Get if is there any next command by type searched and same atribute
- * @param commands {tCommand *} Commands array 
+ * @param commands {tCommand *} Commands array
  * @param commandSearchedType {typesE} The command type searched
  * @param idx {int} Index of the current command 
  * @param commandsQt {int} Quantity of commands on the escalation
@@ -186,9 +186,10 @@ bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedT
 {
     for (int i = 0; i < commandsQt; i++)
     {
-        if (commands[i].transactionId != commands[idx].transactionId && commands[i].type == commandSearchedType && (strcmp(commands[i].atribute, commands[idx].atribute) == 0))
-        {
-            return false;
+        if ((commands[i].transactionId != commands[idx].transactionId) &&
+            (commands[i].type == commandSearchedType) &&
+            (strcmp(commands[i].atribute, commands[idx].atribute) == 0)) {
+                return false;
         }
     }
 }
