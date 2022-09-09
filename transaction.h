@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define MAX_SCHEDULES 10
+
 typedef enum {
     READ,
     WRITE,
@@ -26,6 +28,7 @@ typedef struct tCommand
  * @field attributes {char *} Array of attributes
  */
 typedef struct transaction{
+    long time;
     long id;
     typesE operation;
     char attribute[20];
@@ -52,6 +55,11 @@ typedef struct schedule {
     long transactionQty;
 } TSchedule;
 
+typedef struct scheduleList {
+    TSchedule *schedule;
+    long scheduleListSize;
+} TScheduleList;
+
 typedef struct escalationT
 {
     tTransaction transactions[50];
@@ -68,20 +76,25 @@ typedef struct tSchedule
 } tSchedule;
 
 tSchedule *createSchedule();
-/**
- * @brief map the struct tSchedule to TSchedule
- * @param currSchedule {escalationT} current schedule
- * @param newSchedule {TSchedule *} new schedule
- * @return {TSchedule} a new schedule type
- */
-void mapTo(escalationT currSchedule, TSchedule *newSchedule);
+
+void createGraphScheduleList(TScheduleList *scheduleList);
+
+void destroyGraphSchedule(TSchedule *schedule);
+
+void createTransactionList(TSchedule **schedule);
+
+void insertTransaction(TSchedule *schedule, tCommand command, int index);
+
+void countUniqueTransactions(TScheduleList *scheduleList);
 
 tSchedule *getConcurrentTransactions(tSchedule *mySchedule);
 tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time);
 void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command);
 tCommand *getCommand(char *line);
 tTransaction *createTransaction(int id);
-tSchedule *loadSchedule(FILE *fp);
+
+tSchedule *loadSchedule(FILE *fp, TScheduleList *scheduleList);
+
 tTransaction *beginTransaction(int id);
 bool isNewTransaction(tSchedule *schedule, int transactionId);
 bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedType, int idx, int commandsQt);

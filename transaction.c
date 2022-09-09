@@ -11,15 +11,18 @@
  * @param fp {FILE *} - File pointer to read the schedule
  * @return tSchedule* - Schedule received
  */
-tSchedule *loadSchedule(FILE *fp) {
+tSchedule *loadSchedule(FILE *fp, TScheduleList *graphScheduleList) {
     char *line = NULL;
+    int index = 0;
     size_t len = 0;
     tCommand *command = NULL;
     tSchedule *schedule = createSchedule();
 
+    createGraphScheduleList(graphScheduleList);
+    createTransactionList(&(graphScheduleList->schedule));
+
     while (getline(&line, &len, fp) != -1) {
         escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
-
         command = getCommand(line);
 
         if (isNewTransaction(schedule, command->transactionId)) {
@@ -37,33 +40,14 @@ tSchedule *loadSchedule(FILE *fp) {
             }
         }
 
+        insertTransaction(&graphScheduleList->schedule[schedule->escalationsQt], (*command), index++);
         addCommand(curEscalation->transactions, curEscalation->transactionsQt, command);
         free(command);
     }
-
+    graphScheduleList->scheduleListSize = schedule->escalationsQt;
+    countUniqueTransactions(graphScheduleList);
     fclose(fp);
     return schedule;
-}
-
-void mapTo(escalationT currSchedule, TSchedule *newSchedule) {
-    long countUniqueTransactions = 0;
-    long i;
-
-    for (i = 0; i < currSchedule.transactionsQt; i++) {
-        newSchedule->transactionListSize = currSchedule.transactionsQt;
-        newSchedule->transactionList =
-                (TTransaction *) malloc(sizeof(TTransaction) * newSchedule->transactionListSize);
-
-        newSchedule->transactionList[i].id = currSchedule.transactions[i].id-1;
-        newSchedule->transactionList[i].operation = currSchedule.transactions[i].commands[0].type;
-        strcpy(newSchedule->transactionList[i].attribute,
-               currSchedule.transactions[i].commands[0].atribute);
-
-        if (countUniqueTransactions < newSchedule->transactionList[i].id) {
-            countUniqueTransactions++;
-        }
-    }
-    newSchedule->transactionQty = countUniqueTransactions;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -141,6 +125,67 @@ tSchedule *createSchedule() {
 }
 
 /* -------------------------------------------------------------------------- */
+
+void createGraphScheduleList(TScheduleList *scheduleList){
+
+    if(scheduleList->schedule == NULL) {
+        scheduleList->schedule = malloc(sizeof(TSchedule) * MAX_SCHEDULES );
+        scheduleList->scheduleListSize = 0;
+    }
+}
+
+void destroyGraphSchedule(TSchedule *schedule){
+    free(schedule->transactionList);
+    free(schedule);
+}
+
+void createTransactionList(TSchedule **schedule){
+
+    if((*schedule)->transactionList == NULL) {
+        (*schedule)->transactionList = malloc(
+                sizeof(TTransaction) * MAX_SCHEDULES);
+    }
+    (*schedule)->transactionListSize = 0;
+}
+
+void insertTransaction(TSchedule *schedule, tCommand command, int index){
+
+    if(schedule == NULL) {
+        return;
+    }
+
+    if(command.type == COMMIT) {
+        return;
+    }
+
+    long factor = (schedule->transactionListSize/MAX_SCHEDULES)+1;
+    bool needResize = ((schedule->transactionListSize % MAX_SCHEDULES) == 0);
+
+    if (needResize) {
+        schedule->transactionList = realloc(schedule->transactionList,
+                                               sizeof(TSchedule) * MAX_SCHEDULES * (factor+1));
+    }
+
+    schedule->transactionList[index].time = command.time;
+    schedule->transactionList[index].id = command.transactionId;
+    schedule->transactionList[index].operation = command.type;
+    strcpy(schedule->transactionList[index].attribute, command.atribute);
+    schedule->transactionListSize++;
+}
+
+void countUniqueTransactions(TScheduleList *scheduleList){
+    long uniqueTransactions = 0;
+
+    for(long i = 0; i < scheduleList->scheduleListSize; i++){
+        long size = scheduleList->schedule[i].transactionListSize;
+        for (long j = 0; j < size; j++) {
+            if (scheduleList->schedule[i].transactionList[j].id > uniqueTransactions) {
+                uniqueTransactions++;
+            }
+        }
+        scheduleList->schedule[i].transactionQty = uniqueTransactions;
+    }
+}
 
 tTransaction *createTransaction(int id) {
     tTransaction *transaction = malloc(sizeof(tTransaction));

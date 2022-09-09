@@ -21,7 +21,6 @@ static void addDependencyEdge(Graph *graph, TSchedule *schedule) {
     for (k = 1, i = 0; i < schedule->transactionListSize; i++) {
         scheduleTransaction = schedule->transactionList[i];
         id = scheduleTransaction.id;
-        printf("schedule->transactionList[%ld]: %p\n", id, &schedule->transactionList[id]);
         if (graph->vertexList[id].adjacentList == NULL) {
             graph->vertexList[id].adjacentList =  malloc(sizeof(TVertex*) * DEFAULT_SIZE * k++);
         }
@@ -108,7 +107,7 @@ bool isDirectedAcyclicGraph(Graph *graph) {
     }
 
     if (countAnyYellow > 0) {
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
