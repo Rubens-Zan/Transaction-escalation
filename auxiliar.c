@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "../includes/transaction.h"
+#include "transaction.h"
 
 /* Function to swap values at two pointers */
 void swap(tCommand *x, tCommand *y)

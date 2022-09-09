@@ -1,6 +1,6 @@
-#include "../includes/transaction.h"
-#include "../includes/auxiliar.h"
-#include "../includes/viewEquivalentSchedules.h"
+#include "transaction.h"
+#include "auxiliar.h"
+#include "viewEquivalentSchedules.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
