@@ -68,6 +68,14 @@ typedef struct tSchedule
 } tSchedule;
 
 tSchedule *createSchedule();
+/**
+ * @brief map the struct tSchedule to TSchedule
+ * @param currSchedule {escalationT} current schedule
+ * @param newSchedule {TSchedule *} new schedule
+ * @return {TSchedule} a new schedule type
+ */
+void mapTo(escalationT currSchedule, TSchedule *newSchedule);
+
 tSchedule *getConcurrentTransactions(tSchedule *mySchedule);
 tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time);
 void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command);

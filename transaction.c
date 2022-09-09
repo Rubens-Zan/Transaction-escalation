@@ -11,34 +11,28 @@
  * @param fp {FILE *} - File pointer to read the schedule
  * @return tSchedule* - Schedule received
  */
-tSchedule *loadSchedule(FILE *fp)
-{
+tSchedule *loadSchedule(FILE *fp) {
     char *line = NULL;
     size_t len = 0;
-    //size_t read;
     tCommand *command = NULL;
     tSchedule *schedule = createSchedule();
 
-    while (getline(&line, &len, fp) != -1)
-    {
+    while (getline(&line, &len, fp) != -1) {
         escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
 
         command = getCommand(line);
 
-        if (isNewTransaction(schedule, command->transactionId))
-        {
+        if (isNewTransaction(schedule, command->transactionId)) {
             schedule->transactionsQt++;
             curEscalation->transactions[curEscalation->transactionsQt] = (*createTransaction(schedule->transactionsQt));
             curEscalation->openedTransactions++;
             curEscalation->transactionsQt++;
         }
 
-        if (command->type == COMMIT)
-        {
+        if (command->type == COMMIT) {
             curEscalation->openedTransactions--;
 
-            if (curEscalation->openedTransactions == 0)
-            {
+            if (curEscalation->openedTransactions == 0) {
                 schedule->escalationsQt++;
             }
         }
@@ -51,10 +45,30 @@ tSchedule *loadSchedule(FILE *fp)
     return schedule;
 }
 
+void mapTo(escalationT currSchedule, TSchedule *newSchedule) {
+    long countUniqueTransactions = 0;
+    long i;
+
+    for (i = 0; i < currSchedule.transactionsQt; i++) {
+        newSchedule->transactionListSize = currSchedule.transactionsQt;
+        newSchedule->transactionList =
+                (TTransaction *) malloc(sizeof(TTransaction) * newSchedule->transactionListSize);
+
+        newSchedule->transactionList[i].id = currSchedule.transactions[i].id-1;
+        newSchedule->transactionList[i].operation = currSchedule.transactions[i].commands[0].type;
+        strcpy(newSchedule->transactionList[i].attribute,
+               currSchedule.transactions[i].commands[0].atribute);
+
+        if (countUniqueTransactions < newSchedule->transactionList[i].id) {
+            countUniqueTransactions++;
+        }
+    }
+    newSchedule->transactionQty = countUniqueTransactions;
+}
+
 /* -------------------------------------------------------------------------- */
 
-escalationT *createNewEscalation()
-{
+escalationT *createNewEscalation() {
     escalationT *newEscalation = malloc(sizeof(escalationT));
 
     newEscalation->openedTransactions = 0;
@@ -63,8 +77,7 @@ escalationT *createNewEscalation()
 
 /* -------------------------------------------------------------------------- */
 
-bool isNewTransaction(tSchedule *schedule, int transactionId)
-{
+bool isNewTransaction(tSchedule *schedule, int transactionId) {
     return (transactionId > schedule->transactionsQt);
 }
 
@@ -75,8 +88,7 @@ bool isNewTransaction(tSchedule *schedule, int transactionId)
  * @param line {char *} - Line of the new command
  * @return tCommand* - Return the new command
  */
-tCommand *getCommand(char *line)
-{
+tCommand *getCommand(char *line) {
     line[strlen(line) - 1] = '\0';
     char delim[] = " ";
     static char commandType[20];
@@ -97,25 +109,23 @@ tCommand *getCommand(char *line)
 
 /* -------------------------------------------------------------------------- */
 
-tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time)
-{
+tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time) {
     tCommand *command = malloc(sizeof(tCommand));
 
     strcpy(command->atribute, atribute);
     command->transactionId = transactionId;
-    switch ((*commandType))
-    {
-    case 'R':
-        command->type = READ;
-        break;
-    case 'W':
-        command->type = WRITE;
-        break;
-    case 'C':
-        command->type = COMMIT;
-        break;
-    default:
-        break;
+    switch ((*commandType)) {
+        case 'R':
+            command->type = READ;
+            break;
+        case 'W':
+            command->type = WRITE;
+            break;
+        case 'C':
+            command->type = COMMIT;
+            break;
+        default:
+            break;
     }
     command->time = time;
     return command;
@@ -123,8 +133,7 @@ tCommand *createCommand(char *commandType, char *atribute, int transactionId, in
 
 /* -------------------------------------------------------------------------- */
 
-tSchedule *createSchedule()
-{
+tSchedule *createSchedule() {
     tSchedule *schedule = malloc(sizeof(tSchedule));
     schedule->escalationsQt = 0;
     schedule->transactionsQt = 0;
@@ -133,19 +142,17 @@ tSchedule *createSchedule()
 
 /* -------------------------------------------------------------------------- */
 
-tTransaction *createTransaction(int id)
-{
+tTransaction *createTransaction(int id) {
     tTransaction *transaction = malloc(sizeof(tTransaction));
     transaction->id = id;
     transaction->commandsQt = 0;
 
     return transaction;
 }
+
 /* -------------------------------------------------------------------------- */
-void freeSchedule(tSchedule *schedule)
-{
-    for (int i = 0; i < schedule->escalationsQt; i++)
-    {
+void freeSchedule(tSchedule *schedule) {
+    for (int i = 0; i < schedule->escalationsQt; i++) {
         for (int j = 0; j < schedule->escalations[i].transactionsQt; j++)
             free(&schedule->escalations[i].transactions[j]);
     }
@@ -158,12 +165,9 @@ void freeSchedule(tSchedule *schedule)
  * @param transactionsQt {int} - Transactions quantity in the escalation
  * @param command {tCommand *} - Command to be added to the transaction that it belongs
  */
-void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command)
-{
-    for (int i = 0; i < transactionsQt; i++)
-    {
-        if (transactions[i].id == command->transactionId)
-        {
+void addCommand(tTransaction *transactions, int transactionsQt, tCommand *command) {
+    for (int i = 0; i < transactionsQt; i++) {
+        if (transactions[i].id == command->transactionId) {
             transactions[i].commands[transactions[i].commandsQt] = (*command);
             transactions[i].commandsQt++;
             break;
@@ -182,14 +186,13 @@ void addCommand(tTransaction *transactions, int transactionsQt, tCommand *comman
  * @return true 
  * @return false
  */
-bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedType, int idx, int commandsQt)
-{
-    for (int i = 0; i < commandsQt; i++)
-    {
+bool checkIfIsThereNextCommandByType(tCommand *commands, typesE commandSearchedType, int idx, int commandsQt) {
+    for (int i = 0; i < commandsQt; i++) {
         if ((commands[i].transactionId != commands[idx].transactionId) &&
             (commands[i].type == commandSearchedType) &&
             (strcmp(commands[i].atribute, commands[idx].atribute) == 0)) {
-                return false;
+            return false;
         }
     }
+    return true;
 }

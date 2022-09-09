@@ -21,7 +21,7 @@ typedef struct vertex {
     TVisitState state;
     TTransaction transaction;
     long adjacentListSize;
-    vertex *adjacentList;
+    struct vertex **adjacentList;
 } TVertex;
 
 typedef struct graph {
@@ -35,7 +35,7 @@ typedef struct graph {
  * @param graph - um grafo
  * @param schedule - um agendamento
  */
-void createGraph(Graph *graph, tSchedule *schedule);
+void createGraph(Graph *graph, TSchedule *schedule);
 
 /**
  * @brief Verifica se o grafo tem ciclo
