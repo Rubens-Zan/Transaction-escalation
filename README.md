@@ -19,7 +19,7 @@ A saída ocorre através da saída padrão, sendo que cada linha é composta por
 # Algoritmo de equivalência por visão
 Utiização de função auxiliares, para efetuar as permutações das transações por meio de adaptações no algoritmo de permutação por backtracking. As permutações são traduzidas para apenas aquelas em que não ocorre mudança na order dos comandos em uma mesma transação.
 
-# Algoritmo de serialidade por conflito
+# Algoritmo de seriação de conflito
 Utiliza um algoritmo baseado em busca em profundidade sobre um grafo para detectar se existe um ciclo no mesmo. O grafo é construido criando arestas direcionadas (dependências) entre os vertices (transações) de acordo com as operações efetuadas por transações num agendamento. 
 
 ## Autor 
