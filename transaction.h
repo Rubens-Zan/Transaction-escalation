@@ -20,6 +20,32 @@ typedef struct tCommand
     int time;
 } tCommand;
 
+typedef struct tTransaction
+{
+    int id;
+    tCommand commands[50];
+    int commandsQt;
+    bool isOpened;
+} tTransaction;
+
+typedef struct escalationT
+{
+    tTransaction transactions[50];
+    int openedTransactions;
+    int transactionsQt;
+} escalationT;
+
+typedef struct tSchedule
+{
+    escalationT escalations[50];
+    int escalationsQt;
+    int transactionsQt;
+
+} tSchedule;
+
+tSchedule *createSchedule();
+
+/*================ INICIO - PARA CRIAR O GRAFO DE DEPENDÊNCIAS ======================================*/
 /**
  * @struct TTransaction
  * @brief Struct to represent a transaction
@@ -33,14 +59,6 @@ typedef struct transaction{
     typesE operation;
     char attribute[20];
 }TTransaction;
-
-typedef struct tTransaction
-{
-    int id;
-    tCommand commands[50];
-    int commandsQt;
-    bool isOpened;
-} tTransaction;
 
 /**
  * @struct TSchedule
@@ -60,32 +78,37 @@ typedef struct scheduleList {
     long scheduleListSize;
 } TScheduleList;
 
-typedef struct escalationT
-{
-    tTransaction transactions[50];
-    int openedTransactions;
-    int transactionsQt;
-} escalationT;
-
-typedef struct tSchedule
-{
-    escalationT escalations[50];
-    int escalationsQt;
-    int transactionsQt;
-
-} tSchedule;
-
-tSchedule *createSchedule();
-
+/**
+ * @biref cria uma lista de agendamentos
+ * @param scheduleList - lista de agendamentos
+ */
 void createGraphScheduleList(TScheduleList *scheduleList);
 
+/**
+ * @brief libera memoria alocada para um agendamento
+ * @param schedule um agendamento
+ */
 void destroyGraphSchedule(TSchedule *schedule);
-
+/**
+ * @brief cria uma lista de transações de um agendamento
+ * @param schedule
+ */
 void createTransactionList(TSchedule **schedule);
 
+/**
+ * @brief insere uma transação em um agendamento
+ * @param schedule uma agendamento
+ * @param command um comando
+ * @param index posição da transação no agendamento
+ */
 void insertTransaction(TSchedule *schedule, tCommand command, int index);
 
+/**
+ * @brief conta a quantidade de transações únicas em um agendamento
+ * @param scheduleList uma lista de agendamentos
+ */
 void countUniqueTransactions(TScheduleList *scheduleList);
+/*================ FIM - PARA CRIAR O GRAFO DE DEPENDÊNCIAS ======================================*/
 
 tSchedule *getConcurrentTransactions(tSchedule *mySchedule);
 tCommand *createCommand(char *commandType, char *atribute, int transactionId, int time);

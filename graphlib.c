@@ -115,9 +115,6 @@ bool isDirectedAcyclicGraph(Graph *graph) {
 
     for (vertexId = 0; vertexId < graph->vertexListSize; vertexId++) {
         visit(graph->vertexList, vertexId, &hasCycle);
-//        if (graph->vertexList[vertexId].state == YELLOW) {
-//            return false;
-//        }
     }
     return hasCycle;
 }
