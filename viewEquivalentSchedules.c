@@ -3,7 +3,6 @@
 #include "viewEquivalentSchedules.h"
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 /**
@@ -22,9 +21,7 @@ bool isScheduleEquivalent(escalationT *escalation)
     tCommand **allPermutations = alocateMatCommands(nPermutations+1, commandsQt+1);
 
     int idx =0;
-    permute(allCommands,0,commandsQt-1,allPermutations, &idx, escalation);
-    // printf("\n");
-    // printAllPermutations(allPermutations, nPermutations, commandsQt);
+    permute(allCommands,0,commandsQt-1,allPermutations, &idx, escalation);;
     
     for (int i=0;i < nPermutations;i++){
         if (checkLastWriteCondition(allPermutations[i], commandsQt) && checkWriteAfterRead(allPermutations[i],commandsQt)){
@@ -68,13 +65,7 @@ bool checkWriteAfterRead(tCommand *commands, int n){
     for (int i =0;i < n;i++){
         if (commands[i].type == READ){
             if (checkIfIsThereNextCommandByType(commands,WRITE, i, n))
-                return false; 
-
-            // for (int j = 0;j < n;j++){
-            //     if (commands[j].transactionId != commands[i].transactionId && commands[j].type == WRITE && (strcmp(commands[j].atribute,commands[i].atribute) == 0)){
-            //         return false; 
-            //     }
-            // }
+                return false;
         }
     }
     return true; 

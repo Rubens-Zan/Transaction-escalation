@@ -1,6 +1,7 @@
 MODULOS = transaction \
 	viewEquivalentSchedules \
-	auxiliar
+	auxiliar \
+	graphlib
 
 OBJETOS = escalona.o $(addsuffix .o,$(MODULOS))
 

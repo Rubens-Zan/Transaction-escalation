@@ -5,7 +5,7 @@
  * @date 2022-09-6
  */
 
-#include <stlib.h>
+#include <stdlib.h>
 #include <string.h>
 #include "graphlib.h"
 
@@ -20,15 +20,14 @@ static void addDependencyEdge(Graph *graph, TSchedule *schedule) {
 
     for (k = 1, i = 0; i < schedule->transactionListSize; i++) {
         scheduleTransaction = schedule->transactionList[i];
-        id = resolveId(scheduleTransaction.id);
-
+        id = scheduleTransaction.id;
         if (graph->vertexList[id].adjacentList == NULL) {
-            graph->vertexList[id].adjacentList = (TVertex *) malloc(sizeof(TVertex) * DEFAULT_SIZE * k++);
+            graph->vertexList[id].adjacentList =  malloc(sizeof(TVertex*) * DEFAULT_SIZE * k++);
         }
 
         for (j = i + 1; j < schedule->transactionListSize; j++) {
             if ((scheduleTransaction.id != schedule->transactionList[j].id) &&
-                (strcmp(scheduleTransaction.atribute, schedule->transactionList[j].atribute) == 0)) {
+                (strcmp(scheduleTransaction.attribute, schedule->transactionList[j].attribute) == 0)) {
 
                 if ((scheduleTransaction.operation == WRITE) &&
                     (schedule->transactionList[j].operation == READ)) {
@@ -49,7 +48,7 @@ static void addDependencyEdge(Graph *graph, TSchedule *schedule) {
                 }
             }
             if (graph->vertexList[id].adjacentListSize == DEFAULT_SIZE) {
-                graph->vertexList[id].adjacentList = (TVertex *) realloc(graph->vertexList[id].adjacentList,
+                graph->vertexList[id].adjacentList = (TVertex **) realloc(graph->vertexList[id].adjacentList,
                                                                         sizeof(TVertex) * DEFAULT_SIZE * k++);
             }
         }
@@ -63,18 +62,24 @@ static void addDependencyEdge(Graph *graph, TSchedule *schedule) {
  * @param schedule {TSchedule *} - um agendamento
  */
 void createGraph(Graph *graph, TSchedule *schedule) {
-    long i, j;
+    long i;
     graph->vertexListSize = schedule->transactionQty;
     graph->vertexList = (TVertex *) malloc(sizeof(TVertex) * graph->vertexListSize);
-
     for (i = 0; i < graph->vertexListSize; i++) {
-        graph->vertexList[i].id = i+1;
+        graph->vertexList[i].id = i;
         graph->vertexList[i].state = GREEN;
         graph->vertexList[i].adjacentList = NULL;
         graph->vertexList[i].adjacentListSize = 0;
-        graph->vertexList[i].transaction = NULL;
     }
     addDependencyEdge(graph, schedule);
+}
+
+void destroyGraph(Graph *graph){
+    long i;
+    for (i = 0; i < graph->vertexListSize; i++) {
+        free(graph->vertexList[i].adjacentList);
+    }
+    free(graph->vertexList);
 }
 
 /**
@@ -82,35 +87,34 @@ void createGraph(Graph *graph, TSchedule *schedule) {
  * @param vertex {TVertex} - um vértice
  * @param vertexId  {long} - o id do vértice
  */
-static void visit(TVertex *vertex, long vertexId) {
+static void visit(TVertex *vertexList, long vertexId, bool *hasCycle) {
     long i;
 
-    if (vertex[vertexId].state == RED) {
+    if (vertexList[vertexId].state == RED) {
         return;
     }
-    if (vertex[vertexId].state == GREEN) {
-        vertex[vertexId].state = YELLOW;
-        for (i = 0; i < vertex[vertexId].adjacentListSize; i++) {
-            if (vertex[vertexId].adjacentList[i].state == GREEN) {
-                visit(vertex, vertex[vertexId].adjacentList[i]->id);
+
+    if (vertexList[vertexId].state== YELLOW) {
+        (*hasCycle) = true;
+    }
+
+    if (vertexList[vertexId].state == GREEN) {
+        vertexList[vertexId].state = YELLOW;
+        for (i = 0; i < vertexList[vertexId].adjacentListSize; i++) {
+            if (vertexList[vertexId].adjacentList[i]->state == GREEN) {
+                visit(vertexList, vertexList[vertexId].adjacentList[i]->id, hasCycle);
             }
         }
-        vertex[vertexId].state = RED;
+        vertexList[vertexId].state = RED;
     }
 }
 
 bool isDirectedAcyclicGraph(Graph *graph) {
-    long countAnyYellow, vertexId;
+    long vertexId;
+    bool hasCycle = false;
 
-    for (vertexId = 0, countAnyYellow = 0; vertexId < graph->vertexListSize; vertexId++) {
-        visit(graph->vertexList, vertexId);
-        if (graph->vertexList[vertexId].state == YELLOW) {
-            countAnyYellow++;
-        }
+    for (vertexId = 0; vertexId < graph->vertexListSize; vertexId++) {
+        visit(graph->vertexList, vertexId, &hasCycle);
     }
-
-    if (countAnyYellow > 0) {
-        return true;
-    }
-    return false;
+    return hasCycle;
 }
