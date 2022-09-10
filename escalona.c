@@ -12,28 +12,22 @@ void loopThroughSchedule(tSchedule *schedule, TScheduleList *graphScheduleList) 
     Graph graph[schedule->escalationsQt];
     TSchedule graphSchedule;
 
-    for (int i=0;i < graphScheduleList->scheduleListSize;i++){
-        graphSchedule = graphScheduleList->schedule[i];
-        createGraph(&graph[i], &graphSchedule);
-        printf("%d ",i+1);
-        for (int j = 0; j < graphSchedule.transactionQty;j++){
-            printf("%ld,",graphSchedule.transactionList[j].id);
-        }
-
-        if (isDirectedAcyclicGraph(&graph[i])){
-            printf("SS\n");
-        }else{
-            printf("SN\n");
-        }
-    }
-
     for (int i=0;i < schedule->escalationsQt;i++){
         escalationT *curEscalation = &schedule->escalations[i];
+        graphSchedule = graphScheduleList->schedule[i];
+        createGraph(&graph[i], &graphSchedule);
+
         printf("%d ",i+1);
         for (int j=0;j < curEscalation->transactionsQt-1;j++){
             printf("%d,",curEscalation->transactions[j].id+1);
         }
         printf("%d ",curEscalation->transactions[curEscalation->transactionsQt-1].id + 1);
+
+        if (isDirectedAcyclicGraph(&graph[i])){
+            printf("SS ");
+        }else{
+            printf("SN ");
+        }
 
         if (isScheduleEquivalent(curEscalation)){
             printf("SV\n");

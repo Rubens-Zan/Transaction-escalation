@@ -97,17 +97,13 @@ static void visit(TVertex *vertexList, long vertexId) {
 }
 
 bool isDirectedAcyclicGraph(Graph *graph) {
-    long countAnyYellow, vertexId;
+    long vertexId;
 
-    for (vertexId = 0, countAnyYellow = 0; vertexId < graph->vertexListSize; vertexId++) {
+    for (vertexId = 0; vertexId < graph->vertexListSize; vertexId++) {
         visit(graph->vertexList, vertexId);
         if (graph->vertexList[vertexId].state == YELLOW) {
-            countAnyYellow++;
+            return false;
         }
-    }
-
-    if (countAnyYellow > 0) {
-        return false;
     }
     return true;
 }
