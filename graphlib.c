@@ -74,22 +74,35 @@ void createGraph(Graph *graph, TSchedule *schedule) {
     addDependencyEdge(graph, schedule);
 }
 
+void destroyGraph(Graph *graph){
+    long i;
+    for (i = 0; i < graph->vertexListSize; i++) {
+        free(graph->vertexList[i].adjacentList);
+    }
+    free(graph->vertexList);
+}
+
 /**
  * @brief percorre o grafo assinalando os vértices visitados
  * @param vertex {TVertex} - um vértice
  * @param vertexId  {long} - o id do vértice
  */
-static void visit(TVertex *vertexList, long vertexId) {
+static void visit(TVertex *vertexList, long vertexId, bool *hasCycle) {
     long i;
 
     if (vertexList[vertexId].state == RED) {
         return;
     }
+
+    if (vertexList[vertexId].state== YELLOW) {
+        (*hasCycle) = true;
+    }
+
     if (vertexList[vertexId].state == GREEN) {
         vertexList[vertexId].state = YELLOW;
         for (i = 0; i < vertexList[vertexId].adjacentListSize; i++) {
             if (vertexList[vertexId].adjacentList[i]->state == GREEN) {
-                visit(vertexList, vertexList[vertexId].adjacentList[i]->id);
+                visit(vertexList, vertexList[vertexId].adjacentList[i]->id, hasCycle);
             }
         }
         vertexList[vertexId].state = RED;
@@ -98,12 +111,13 @@ static void visit(TVertex *vertexList, long vertexId) {
 
 bool isDirectedAcyclicGraph(Graph *graph) {
     long vertexId;
+    bool hasCycle = false;
 
     for (vertexId = 0; vertexId < graph->vertexListSize; vertexId++) {
-        visit(graph->vertexList, vertexId);
-        if (graph->vertexList[vertexId].state == YELLOW) {
-            return false;
-        }
+        visit(graph->vertexList, vertexId, &hasCycle);
+//        if (graph->vertexList[vertexId].state == YELLOW) {
+//            return false;
+//        }
     }
-    return true;
+    return hasCycle;
 }

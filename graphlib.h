@@ -46,5 +46,11 @@ void createGraph(Graph *graph, TSchedule *schedule);
  */
 bool isDirectedAcyclicGraph(Graph *graph);
 
+/**
+ * @brief destroi um grafo liberando a memória alocada
+ * @param graph {Graph *} - um grafo
+ */
+void destroyGraph(Graph *graph);
+
 
 #endif //GRAPHLIB_H

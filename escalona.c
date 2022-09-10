@@ -19,14 +19,14 @@ void loopThroughSchedule(tSchedule *schedule, TScheduleList *graphScheduleList) 
 
         printf("%d ",i+1);
         for (int j=0;j < curEscalation->transactionsQt-1;j++){
-            printf("%d,",curEscalation->transactions[j].id+1);
+            printf("%d,",curEscalation->transactions[j].id);
         }
-        printf("%d ",curEscalation->transactions[curEscalation->transactionsQt-1].id + 1);
+        printf("%d ",curEscalation->transactions[curEscalation->transactionsQt-1].id);
 
         if (isDirectedAcyclicGraph(&graph[i])){
             printf("SS ");
         }else{
-            printf("SN ");
+            printf("NS ");
         }
 
         if (isScheduleEquivalent(curEscalation)){
@@ -34,7 +34,9 @@ void loopThroughSchedule(tSchedule *schedule, TScheduleList *graphScheduleList) 
         }else{
             printf("NV\n");
         }
+        destroyGraph((graph+i));
     }
+
 }
 
 int main(int argc, char **argv)
