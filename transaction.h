@@ -54,7 +54,6 @@ tSchedule *createSchedule();
  * @field attributes {char *} Array of attributes
  */
 typedef struct transaction{
-    long time;
     long id;
     typesE operation;
     char attribute[20];
@@ -68,14 +67,14 @@ typedef struct transaction{
  * @field transactionQty {int} quantity of unique transactions ids
  */
 typedef struct schedule {
-    TTransaction *transactionList;
     long transactionListSize;
     long transactionQty;
+    TTransaction *transactionList;
 } TSchedule;
 
 typedef struct scheduleList {
-    TSchedule *schedule;
     long scheduleListSize;
+    TSchedule *schedule;
 } TScheduleList;
 
 /**
@@ -93,7 +92,7 @@ void destroyGraphSchedule(TSchedule *schedule);
  * @brief cria uma lista de transações de um agendamento
  * @param schedule
  */
-void createTransactionList(TSchedule **schedule);
+void createTransactionList(TSchedule *schedule);
 
 /**
  * @brief insere uma transação em um agendamento

@@ -19,7 +19,7 @@ tSchedule *loadSchedule(FILE *fp, TScheduleList *graphScheduleList) {
     tSchedule *schedule = createSchedule();
 
     createGraphScheduleList(graphScheduleList);
-    createTransactionList(&(graphScheduleList->schedule));
+    createTransactionList(graphScheduleList->schedule);
 
     while (getline(&line, &len, fp) != -1) {
         escalationT *curEscalation = &schedule->escalations[schedule->escalationsQt];
@@ -128,10 +128,9 @@ tSchedule *createSchedule() {
 
 void createGraphScheduleList(TScheduleList *scheduleList){
 
-    if(scheduleList->schedule == NULL) {
-        scheduleList->schedule = malloc(sizeof(TSchedule) * MAX_SCHEDULES );
+    scheduleList->schedule = (TSchedule*) malloc(sizeof(TSchedule) * MAX_SCHEDULES );
         scheduleList->scheduleListSize = 0;
-    }
+
 }
 
 void destroyGraphSchedule(TSchedule *schedule){
@@ -139,13 +138,10 @@ void destroyGraphSchedule(TSchedule *schedule){
     free(schedule);
 }
 
-void createTransactionList(TSchedule **schedule){
+void createTransactionList(TSchedule *schedule){
 
-    if((*schedule)->transactionList == NULL) {
-        (*schedule)->transactionList = malloc(
-                sizeof(TTransaction) * MAX_SCHEDULES);
-    }
-    (*schedule)->transactionListSize = 0;
+    schedule->transactionList = malloc(sizeof(TTransaction) * MAX_SCHEDULES);
+    schedule->transactionListSize = 0;
 }
 
 void insertTransaction(TSchedule *schedule, tCommand command, int index){
@@ -166,7 +162,6 @@ void insertTransaction(TSchedule *schedule, tCommand command, int index){
                                                sizeof(TSchedule) * MAX_SCHEDULES * (factor+1));
     }
 
-    schedule->transactionList[index].time = command.time;
     schedule->transactionList[index].id = command.transactionId;
     schedule->transactionList[index].operation = command.type;
     strcpy(schedule->transactionList[index].attribute, command.atribute);
