@@ -16,6 +16,8 @@ Leitura dos comandos por linha separados por quatro campos, _tempo cheagada_,_id
 
 ## Saída
 ![image](https://github.com/Rubens-Zan/Transaction-escalation/assets/80857600/93a3927d-4836-4b12-9cee-48d236ecf3f3)
+
+
 A saída ocorre através da saída padrão, sendo que cada linha é composta por um escalonamento do agendamento recebido, sendo representado por 4 campos:  
 (_identificador do escalonamento_,_lista de transações_,_serialidade do escalonamento_,_equivalência do escalonamento por visão_). 
 A saída deve ser feita pela saída padrão (stdout). O arquivo será composto por uma sequência de linhas. Uma linha para cada escalonamento. Cada linha tem 4 campos separados por espaço (um único espaço entre cada par de campos). O primeiro campo é o identificador do escalonamento. O segundo campo é a lista de transações. E o terceiro apresenta o resultado do algoritmo da garantia da seriabilidade, onde SS e NS significam respectivamente serial (SS) ou não serial (NS). O quarto campo é o resultado do algoritmo de teste de equivalência de visão, onde SV e NV significam respectivamente equivalente (SV) ou não equivalente (NV) 
